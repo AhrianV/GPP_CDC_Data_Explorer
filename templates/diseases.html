@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% from "chart_favorite.html" import favorite_button with context %}
+
+{% block title %}Disease Data | CDC Data Explorer{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/data-pages.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="container data-page">
+    <div class="data-page-layout">
+        <div class="data-page-main">
+            <div class="data-page-heading">
+                <span>Disease surveillance</span>
+                <h1>Reported Disease Cases</h1>
+                <p>Review reported case trends over time and compare cumulative totals.</p>
+            </div>
+
+            <div id="disease-trends" class="data-panel my-5 p-4">
+                {{ favorite_button("disease-trends", "Disease cases over time") }}
+                {% if over_time_graph %}
+                {% if disease_notices and disease_notices.get("over_time") %}
+                <p class="alert alert-warning" role="status">{{ disease_notices["over_time"] }}</p>
+                {% endif %}
+                {{ over_time_graph | safe }}
+                {% if over_time_graph_analysis %}
+                <div class="analysis-panel rounded mt-5 p-3">
+                    <span class="badge" style="background-color: #76B5FF">AI Generated</span>
+                    <div class="text-center" style="white-space: pre-wrap;">{{over_time_graph_analysis}}</div>
+                </div>
+
+                {% else %}
+                <form action="{{url_for('disease_page')}}" method="POST">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <input name="graph-title" type="hidden" value="Disease Cases Over Time">
+                    <input name="data" type="hidden" value="over_time">
+                    <button class="btn btn-primary" type="submit">AI Analyze</button>
+                </form>
+                {% endif %}
+                {% else %}
+                <h2 class="h5">Chart temporarily unavailable</h2>
+                <p role="status">We could not load this disease chart. Please try again in a minute.</p>
+                <a class="btn btn-outline-primary" href="{{ url_for('disease_page') }}">Retry loading data</a>
+                {% endif %}
+            </div>  
+            <div id="disease-totals" class="data-panel p-4">
+                {{ favorite_button("disease-totals", "Cumulative disease cases") }}
+                {% if cumulative_cases_graph %}
+                {% if disease_notices and disease_notices.get("cumulative") %}
+                <p class="alert alert-warning" role="status">{{ disease_notices["cumulative"] }}</p>
+                {% endif %}
+                {{ cumulative_cases_graph | safe }}
+
+                {% if cumulative_cases_graph_analysis %}
+                <div class="analysis-panel rounded mt-5 p-3">
+                    <span class="badge" style="background-color: #76B5FF">AI Generated</span>
+                    <div class="text-center" style="white-space: pre-wrap;">{{cumulative_cases_graph_analysis}}</div>
+                </div>
+
+                {% else %}
+                <form action="{{url_for('disease_page')}}" method="POST">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <input name="graph-title" type="hidden" value="Cumulative Cases Per Disease This Year">
+                    <input name="data" type="hidden" value="cumulative_cases">
+                    <button class="btn btn-primary" type="submit">AI Analyze</button>
+                </form>
+                    
+                {% endif %}
+                {% else %}
+                <h2 class="h5">Chart temporarily unavailable</h2>
+                <p role="status">We could not load this disease chart. Please try again in a minute.</p>
+                <a class="btn btn-outline-primary" href="{{ url_for('disease_page') }}">Retry loading data</a>
+                {% endif %}
+            </div>            
+        </div>
+        {% with active_data_page="disease_page", sidebar_loading=false %}
+            {% include "data_sidebar.html" %}
+        {% endwith %}
+    </div>
+</div>
+<script src="{{ url_for('static', filename='js/favorites.js') }}" defer></script>
+{% endblock %}

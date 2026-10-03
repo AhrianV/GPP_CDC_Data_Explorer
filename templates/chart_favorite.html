@@ -1,0 +1,11 @@
+{% macro favorite_button(chart_id, title) %}
+{% set is_saved = chart_id in saved_chart_ids|default([]) %}
+<form class="chart-favorite" action="{{ url_for('chart_favorite', chart_id=chart_id) }}" method="POST" data-chart-title="{{ title }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <input type="hidden" name="action" value="{{ 'remove' if is_saved else 'save' }}">
+    <button type="submit" {% if favorites_unavailable %}disabled title="Saved charts are temporarily unavailable"{% endif %} class="favorite-button{% if is_saved %} is-saved{% endif %}" aria-pressed="{{ 'true' if is_saved else 'false' }}" aria-label="{{ 'Remove saved chart: ' if is_saved else 'Save chart: ' }}{{ title }}">
+        <i class="bi {{ 'bi-heart-fill' if is_saved else 'bi-heart' }}" aria-hidden="true"></i><span>{{ 'Saved' if is_saved else 'Save chart' }}</span>
+    </button>
+    <span class="favorite-status" role="status" aria-live="polite"></span>
+</form>
+{% endmacro %}

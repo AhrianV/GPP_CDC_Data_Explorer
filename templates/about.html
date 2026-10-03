@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}About the Project | CDC Data Explorer{% endblock %}
+{% block content %}
+    <section class="hero" aria-labelledby="about-title">
+        <h1 id="about-title">About CDC Data Explorer</h1>
+        <div class="hero-img project-preview">
+            <img src="{{ url_for('static', filename='images/about-dashboard.png') }}" width="1490" height="852" alt="CDC Data Explorer dashboard showing data modules, saved charts, dataset metrics, and dataset uploads.">
+        </div>
+        <p>CDC Data Explorer is a student-built application created as part of the CodeWizardsHQ Group Project Program. Students worked together as a development team to build an app for exploring vaccination coverage, reported disease cases, and food-product nutrition.</p>
+        <p>Explore charts, save your favorites, or upload a dataset for summaries and AI-assisted analysis. The project brings together the team's frontend and full stack development skills in one shared application.</p>
+        <a href="#team" class="btn-learn">Meet our team</a>
+    </section>
+
+    <section id="team" class="team" aria-labelledby="team-title">
+        <h2 id="team-title">Meet the Team</h2>
+        <div class="team-grid">
+            {% for name, initials, role in [('Adrian', 'A', 'Frontend Developer'), ('Ahrian Vemuri', 'AV', 'Full Stack Developer'), ('Akshat Parekh', 'AP', 'Full Stack Developer'), ('James Seudieu', 'JS', 'Frontend Developer')] %}
+            <div class="team-card">
+                <div class="team-img" aria-hidden="true">{{ initials }}</div>
+                <h3>{{ name }}</h3><p>{{ role }}</p>
+                <p>Student at Group Project Program</p>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+{% endblock %}

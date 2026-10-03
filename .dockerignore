@@ -1,0 +1,11 @@
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.git
+.github
+.env
+.env.example
+tmp/
+tests/
+

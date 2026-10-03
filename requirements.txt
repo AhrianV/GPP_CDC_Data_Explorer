@@ -1,0 +1,11 @@
+Flask==3.0.0
+Flask-Limiter[redis]==4.1.1
+Flask-WTF==1.2.2
+google-genai==2.6.0
+python-dotenv==1.0.0
+waitress==3.0.2
+pandas==2.2.3
+plotly==6.9.0
+Flask-Caching==2.4.1
+groq==1.6.0
+tiktoken==0.13.0

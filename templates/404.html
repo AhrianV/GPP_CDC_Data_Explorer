@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+<div class="d-flex flex-column align-items-center justify-content-center vh-100 w-100">
+    <h1 style="color: #F2AF29;">Error 404: Page not found</h1>
+    <p class="my-4" style="color: #336B91;">The page your looking for does not exist. Try double checking your spelling, or go back to the home page using the button below.</p>
+    <a href="{{ url_for('home') }}">
+        <button class="btn mt-3" style="background-color: #018CFF; color: white;">Go Home</button>
+    </a>
+</div>
+
+
+{% endblock %}

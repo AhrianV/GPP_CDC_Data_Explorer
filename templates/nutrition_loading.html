@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block title %}Loading Nutrition Data | CDC Data Explorer{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/data-pages.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="container data-page nutrition-loading-page">
+    <div class="data-page-layout">
+        <div class="data-page-main">
+            <div class="nutrition-loading-shell" role="status" aria-live="polite">
+                <div class="loading-header">
+                    <span class="dashboard-eyebrow">Nutrient feed</span>
+                    <h1>Nutrition Data Loading</h1>
+                </div>
+
+                <div class="loading-panel">
+                    <div class="loading-spinner-wrap">
+                        <img src="{{ url_for('static', filename='images/loading.gif') }}" class="loading-gif" alt="loading gif">
+                    </div>
+
+                    <div class="loading-copy">
+                        <h2>Status: pulling live nutrition data</h2>
+                        <p>We are fetching the latest USDA and Open Food Facts information. This may take a minute or two.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        {% with active_data_page="nutrition_page", sidebar_loading=true %}
+            {% include "data_sidebar.html" %}
+        {% endwith %}
+    </div>
+</div>
+
+<script>
+    function checkStatus() {
+        fetch("/nutrition-status")
+            .then(response => response.json())
+            .then(data => {
+                if (data.ready) {
+                    window.location.href = "/nutrition" + window.location.hash;
+                }
+            });
+    }
+
+    setInterval(checkStatus, 2000);
+</script>
+{% endblock %}

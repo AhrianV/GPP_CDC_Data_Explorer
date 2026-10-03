@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-10 offset-md-1">
+            <h1>Signup</h1>
+            {% if rate_limit_message %}<div class="alert alert-warning" role="alert">{{ rate_limit_message }}</div>{% endif %}
+            <p>Create a new account below! If you already have an account, <a href="{{ url_for('signin') }}">sign in</a>.</p>
+
+            <form class="mt-5" id="signup-form" action="{{url_for('signup')}}" method="POST" style="background-color: #ECF5F4;">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <div class="form-floating mb-3">
+                    <input required  
+                    id="username-input" 
+                    class="form-control" 
+                    name="username" 
+                    type="text" 
+                    placeholder="Enter a Username" 
+                    minlength="3" 
+                    maxlength="40">
+                    <label for="username-input">Username</label>
+                </div>
+
+                <div class="form-floating mb-3">
+                    <input 
+                    id="email-input" 
+                    class="form-control" 
+                    name="email" 
+                    type="email" 
+                    placeholder="Enter an Email (optional)" 
+                    minlength="5" 
+                    maxlength="254">
+                    <label for="email-input">Email (optional)</label>
+                </div>
+
+                <div class="form-floating mb-3">
+                    <input required  
+                    id="password-input" 
+                    class="form-control" 
+                    name="password" 
+                    type="password" 
+                    placeholder="Enter a Password" 
+                    minlength="7" 
+                    maxlength="256">
+                    <label for="password-input">Password</label>
+                </div>
+
+                <div class="form-check mb-3">
+                    <input class="form-check-input" type="checkbox" id="educational-acknowledgment" name="educational_acknowledgment" value="accepted" required>
+                    <label class="form-check-label small" for="educational-acknowledgment">I acknowledge this is an educational project. To the extent permitted by law, CodeWizardsHQ, its students, and instructors are not liable for harm arising from my use.</label>
+                </div>
+
+                <button type="submit" class="btn btn-dark">Create Account</button>
+            </form>
+
+            
+
+            
+        </div>
+    </div>
+</div>
+{% endblock %}

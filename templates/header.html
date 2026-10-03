@@ -1,0 +1,48 @@
+<header class="navbar">
+    <div class="container nav-container">
+        <a class="logo text-decoration-none" href="{{ url_for('home') }}">
+            <img class="logo-image" src="{{ url_for('static', filename='images/logo.png') }}" alt="CDC Data Explorer">
+            <span class="logo-text">CDC Data Explorer</span>
+        </a>
+
+        <nav class="nav-menu">
+            <a href="{{ url_for('dashboard') if session.get('user_id') else url_for('home') }}">{{ 'Dashboard' if session.get('user_id') else 'Home' }}</a>
+            <a href="{{ url_for('about') }}">About</a>
+        </nav>
+
+        <div class="nav-auth">
+            {% if session.get('user_id') %}
+                <details class="profile-menu">
+                    <summary aria-label="Open profile avatar selector">
+                        {% set selected_avatar = current_user['avatar'] if current_user and current_user['avatar'] in avatar_options else 'blue' %}
+                        <span class="profile-avatar profile-avatar-{{ selected_avatar }}" aria-hidden="true">{{ avatar_options[selected_avatar].emoji }}</span>
+                        <span class="profile-name">{{ current_user['username'] if current_user else 'Profile' }}</span>
+                        <i class="bi bi-chevron-down" aria-hidden="true"></i>
+                    </summary>
+                    <div class="avatar-picker">
+                        <span class="avatar-picker-title">Choose an avatar</span>
+                        <div class="avatar-options">
+                            {% for avatar_key, avatar in avatar_options.items() %}
+                                <form action="{{ url_for('select_avatar') }}" method="POST">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <input type="hidden" name="avatar" value="{{ avatar_key }}">
+                                    <input type="hidden" name="next" value="{{ request.path }}">
+                                    <button class="profile-avatar profile-avatar-{{ avatar_key }}{% if avatar_key == selected_avatar %} is-selected{% endif %}" type="submit" title="{{ avatar.label }}" aria-label="Select {{ avatar.label }}">
+                                        {{ avatar.emoji }}
+                                    </button>
+                                </form>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </details>
+                <form action="{{ url_for('logout') }}" method="POST" class="signout-form">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button type="submit" class="btn-link">Sign out</button>
+                </form>
+            {% else %}
+                <a href="{{ url_for('signin') }}" class="btn-link">Sign In</a>
+                <a href="{{ url_for('signup') }}" class="btn btn-primary">Sign Up</a>
+            {% endif %}
+        </div>
+    </div>
+</header>

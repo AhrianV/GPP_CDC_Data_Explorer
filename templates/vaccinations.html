@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% from "chart_favorite.html" import favorite_button with context %}
+
+{% block title %}Vaccination Data | CDC Data Explorer{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/data-pages.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="container data-page">
+    <div class="data-page-layout">
+        <div class="data-page-main">
+            <div class="data-page-heading">
+                <span>Vaccination coverage</span>
+                <h1>COVID-19 Vaccination Data</h1>
+                <p>Track vaccination progress over time and compare rates across states.</p>
+            </div>
+
+            <div id="vaccination-trends" class="data-panel my-5 p-4">
+                {{ favorite_button("vaccination-trends", "Vaccination trends") }}
+                {{ over_time_graph | safe }}
+
+                {% if over_time_analysis %}
+                <div class="analysis-panel rounded mt-5 p-3">
+                    <span class="badge" style="background-color: #76B5FF">AI Generated</span>
+                    <div class="text-center" style="white-space: pre-wrap;">{{over_time_analysis}}</div>
+                </div>
+
+                {% else %}
+                <form action="{{url_for('vaccination_page')}}" method="POST">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <input name="graph-title" type="hidden" value="COVID-19 Vaccination Rate Over Time">
+                    <input name="data" type="hidden" value="over_time">
+                    <button class="btn btn-primary" type="submit">AI Analyze</button>
+                </form>
+                    
+                {% endif %}
+            </div>
+
+
+            <div id="vaccination-states" class="data-panel p-4">
+                {{ favorite_button("vaccination-states", "Vaccination coverage by state") }}
+                {{ by_state_graph | safe }}
+
+                {% if state_time_bar_analysis %}
+                <div class="analysis-panel rounded mt-5 p-3">
+                    <span class="badge" style="background-color: #76B5FF">AI Generated</span>
+                    <div class="text-center" style="white-space: pre-wrap;">{{state_time_bar_analysis}}</div>
+                </div>
+
+                {% else %}
+                <form action="{{url_for('vaccination_page')}}" method="POST">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <input name="graph-title" type="hidden" value="COVID-19 Vaccination Rate by State Bar Graph">
+                    <input name="data" type="hidden" value="state_time_bar">
+                    <button class="btn btn-primary" type="submit">AI Analyze</button>
+                </form>
+                    
+                {% endif %}
+            </div> 
+
+
+            <div id="vaccination-map" class="data-panel my-5 p-4">
+                {{ favorite_button("vaccination-map", "Vaccination coverage map") }}
+                {{ by_state_map | safe }}
+
+                {% if state_time_map_analysis %}
+                <div class="analysis-panel rounded mt-5 p-3">
+                    <span class="badge" style="background-color: #76B5FF">AI Generated</span>
+                    <div class="text-center" style="white-space: pre-wrap;">{{state_time_map_analysis}}</div>
+                </div>
+
+                {% else %}
+                <form action="{{url_for('vaccination_page')}}" method="POST">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <input name="graph-title" type="hidden" value="COVID-19 Vaccination Rate Across States Choropleth (analysis should be more geographically focused)">
+                    <input name="data" type="hidden" value="state_time_map">
+                    <button class="btn btn-primary" type="submit">AI Analyze</button>
+                </form>
+                    
+                {% endif %}
+                
+            </div>         
+        </div>
+        {% with active_data_page="vaccination_page", sidebar_loading=false %}
+            {% include "data_sidebar.html" %}
+        {% endwith %}
+    </div>
+</div>
+<script src="{{ url_for('static', filename='js/favorites.js') }}" defer></script>
+{% endblock %}

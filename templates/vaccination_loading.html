@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block title %}Loading Vaccination Data | CDC Data Explorer{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/data-pages.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="container data-page">
+    <div class="data-page-layout">
+        <div class="data-page-main d-flex flex-column align-items-center">
+            <h1 class="text-center">Vaccination Data Loading</h1>
+            <p class="text-center mb-5">This may take a few minutes</p>
+
+            <!-- Example: Add a section -->
+            <div class="container mt-5 w-50">
+                <h2>Status:</h2>
+                <h5 class="text-center">Waiting on CDC API to send data</h5>
+                <p class="text-center">Sorry, we are waiting on the api to send the data. This can take a couple minutes.</p>
+            </div>
+
+
+            <img src="{{url_for('static', filename='images/loading.gif')}}" class="img-fluid mt-5" alt="loading gif" style="width: 150px;">
+
+
+            
+            
+
+            
+        </div>
+        {% with active_data_page="vaccination_page", sidebar_loading=true %}
+            {% include "data_sidebar.html" %}
+        {% endwith %}
+    </div>
+</div>
+
+<script>
+    function checkStatus() {
+        fetch("/vaccination-status")
+            .then(response => response.json())
+            .then(data => {
+                if (data.ready) {
+                    window.location.href = "/vaccinations" + window.location.hash;
+                }
+            });
+    }
+
+    setInterval(checkStatus, 2000);
+</script>
+{% endblock %}

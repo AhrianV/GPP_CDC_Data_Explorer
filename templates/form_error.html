@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}Please try again | CDC Data Explorer{% endblock %}
+{% block content %}
+<div class="container my-5">
+    <h1>Please try again</h1>
+    <p class="alert alert-warning" role="alert">{{ message }}</p>
+    <a class="btn btn-primary" href="{{ return_url }}">Return to the page</a>
+</div>
+{% endblock %}

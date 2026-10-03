@@ -1,0 +1,174 @@
+﻿{% extends "base.html" %}
+{% block title %}Explore Public Health Data | CDC Data Explorer{% endblock %}
+{% block content %}
+    <main>
+        <!-- Hero Section -->
+        <section class="hero text-center">
+            <div class="container-small">
+                <h1 class="hero-title">Understand CDC health data more easily</h1>
+                <p class="hero-subtitle">Explore public health data through clear, interactive dashboards.</p>
+                
+                <div class="prompt-box">
+                    <span class="prompt-tag">Our purpose</span>
+                    <p class="prompt-text">
+                        This educational app helps people explore and understand data published by the Centers for Disease Control and Prevention (CDC).
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Social Proof / Benefits Section -->
+        <section id="about" class="benefits">
+            <div class="container grid-2">
+                <div class="benefits-content">
+                    <h2 class="section-title">A student-built way to explore public health information.</h2>
+                    <p class="section-desc">We present CDC datasets in approachable charts and dashboards to support learning and help visitors better understand public health data.</p>
+                    <a href="#about" class="link-arrow">Learn More About Us &rarr;</a>
+                </div>
+                <div class="image-placeholder">
+                    <img src="{{ url_for('static', filename='images/vaccination-dashboard.png') }}" alt="CDC vaccination rate dashboard showing a map of vaccination rates across the United States">
+                </div>
+            </div>
+        </section>
+
+        <!-- Testimonial Section -->
+        <section class="testimonial text-center">
+            <div class="container-small">
+                <blockquote class="quote">
+                    This dashboard is an educational project and is not a source of medical advice, diagnosis, or treatment. Please consult a qualified healthcare professional for medical guidance.
+                </blockquote>
+                <cite class="quote-author">Created by students</cite>
+                <p class="quote-title">CodeWizardsHQ</p>
+<section class="hero text-center">
+    <div class="container-small">
+        <span class="prompt-tag">CDC Data Explorer</span>
+        <h1 class="hero-title">Explore the data behind public health.</h1>
+        <p class="hero-subtitle">Discover reported disease trends, compare COVID-19 vaccination rates, and explore nutrition data through interactive charts and AI-assisted explanations.</p>
+        <div class="d-flex flex-wrap justify-content-center gap-3">
+            {% if session.get('user_id') %}
+                <a href="{{ url_for('dashboard') }}" class="btn btn-primary btn-lg">Open your dashboard</a>
+            {% else %}
+                <a href="{{ url_for('signup') }}" class="btn btn-primary btn-lg">Create an account</a>
+                <a href="{{ url_for('signin') }}" class="btn btn-light btn-lg">Sign in</a>
+            {% endif %}
+            <a href="#explore" class="btn btn-link">Explore the project &darr;</a>
+        </div>
+    </div>
+</section>
+
+<section id="explore" class="benefits">
+    <div class="container">
+        <h2 class="section-title text-center">Three ways to explore health data</h2>
+        <p class="section-desc text-center">Start with a topic, explore its charts, and look for patterns across the available data.</p>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <article class="h-100 p-4 border rounded-4">
+                    <i class="bi bi-graph-up fs-2 text-primary" aria-hidden="true"></i>
+                    <h3 class="h4 mt-3">Reported diseases</h3>
+                    <p>Explore reported disease cases over time and compare cumulative case counts across diseases using CDC data.</p>
+                    <a href="{{ url_for('disease_page') }}" class="link-arrow">Explore disease trends &rarr;</a>
+                </article>
+            </div>
+            <div class="col-md-4">
+                <article class="h-100 p-4 border rounded-4">
+                    <i class="bi bi-map fs-2 text-primary" aria-hidden="true"></i>
+                    <h3 class="h4 mt-3">COVID-19 vaccinations</h3>
+                    <p>View vaccination rates over time and compare states with bar charts and an interactive map.</p>
+                    <a href="{{ url_for('vaccination_page') }}" class="link-arrow">Explore vaccination data &rarr;</a>
+                </article>
+            </div>
+            <div class="col-md-4">
+                <article class="h-100 p-4 border rounded-4">
+                    <i class="bi bi-basket fs-2 text-primary" aria-hidden="true"></i>
+                    <h3 class="h4 mt-3">Food and nutrition</h3>
+                    <p>Explore food nutrient information from USDA FoodData Central or Open Food Facts, including energy, protein, fat, and carbohydrates.</p>
+                    <a href="{{ url_for('nutrition_page') }}" class="link-arrow">Explore nutrition data &rarr;</a>
+                </article>
+            </div>
+        </div>
+        {% if not session.get('user_id') %}
+            <p class="text-center text-muted mt-4 mb-0">Sign in to access the data pages and analysis tools.</p>
+        {% endif %}
+    </div>
+</section>
+
+        <!-- Subscriptions / CTA Section -->
+        <section id="subscriptions" class="cta text-center">
+            <div class="container-small">
+                <h2 class="section-title">Ready to explore the data?</h2>
+                <p class="section-desc">Use the dashboard to view and learn from available CDC health datasets.</p>
+                
+                <div class="card-gradient">
+                    <h3 class="card-title">CDC Data Explorer</h3>
+                    <p class="card-subtitle">Explore public health information for educational purposes.</p>
+                    <a href="{{ url_for('signup') }}" class="btn btn-light btn-lg">Explore the Dashboard</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- FAQ Section -->
+        <section id="faq" class="faq">
+            <div class="container-small">
+                <h2 class="section-title text-center">About the project</h2>
+                <p class="section-desc text-center">Frequently asked questions</p>
+                
+                <div class="accordion">
+                    <details class="accordion-item" open>
+                        <summary class="accordion-header">Who created this app?</summary>
+                        <div class="accordion-body">
+                            <p>This educational app was created by students from CodeWizardsHQ to make CDC health data easier to explore and understand.</p>
+                        </div>
+                    </details>
+                    <details class="accordion-item">
+                        <summary class="accordion-header">Where does the data come from?</summary>
+                        <div class="accordion-body">
+                            <p>The dashboards use publicly available data from the CDC. Update timing depends on the source dataset and the CDC.</p>
+                        </div>
+                    </details>
+<section class="cta">
+    <div class="container grid-2">
+        <div>
+            <span class="prompt-tag">From charts to understanding</span>
+            <h2 class="section-title">Get help interpreting what you see.</h2>
+            <p class="section-desc">Request an AI analysis of a displayed graph for a plain-language explanation of key trends, notable changes, and possible context.</p>
+            <p>The analysis uses the graph title and a sample of its data. Use it as a starting point for exploration, and check conclusions against the chart and original source.</p>
+        </div>
+        <div class="prompt-box">
+            <h3 class="h4 mb-3">How to get started</h3>
+            <ol class="ps-4 mb-0">
+                <li class="mb-3">Create an account or sign in to open your dashboard.</li>
+                <li class="mb-3">Choose diseases, vaccinations, or nutrition.</li>
+                <li class="mb-3">Explore the charts and compare the available values.</li>
+                <li>Use the graph's AI analysis option to help interpret its patterns.</li>
+            </ol>
+        </div>
+    </div>
+</section>
+
+<section id="faq" class="faq">
+    <div class="container-small">
+        <h2 class="section-title text-center">About the data</h2>
+        <p class="section-desc text-center">A little context for your exploration.</p>
+        <div class="accordion">
+            <details class="accordion-item" open>
+                <summary class="accordion-header">Where does the data come from?</summary>
+                <div class="accordion-body">
+                    <p class="mb-0">Disease and vaccination charts use CDC public datasets. Nutrition information comes from USDA FoodData Central when available, with Open Food Facts as an alternative source.</p>
+                </div>
+            </details>
+            <details class="accordion-item">
+                <summary class="accordion-header">Does every chart show current data?</summary>
+                <div class="accordion-body">
+                    <p class="mb-0">The available dates depend on the source dataset, and results may be cached. Check the dates and labels on each chart; historical data does not necessarily describe current conditions.</p>
+                </div>
+            </details>
+            <details class="accordion-item">
+                <summary class="accordion-header">What is this project designed for?</summary>
+                <div class="accordion-body">
+                    <p class="mb-0">CDC Data Explorer is a student project for exploring public health data and practicing data interpretation. Its charts and AI explanations support learning, rather than diagnosis or treatment planning.</p>
+                </div>
+            </details>
+        </div>
+    </div>
+</section>
+{% endblock %}

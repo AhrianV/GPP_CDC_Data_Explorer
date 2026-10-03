@@ -1,0 +1,26 @@
+{% set data_modules = [
+    ('vaccination_page', 'COVID-19 vaccinations', 'bi-shield-check', [('vaccination-trends', 'Vaccination trends'), ('vaccination-states', 'State comparison'), ('vaccination-map', 'Coverage map')]),
+    ('disease_page', 'Reported disease cases', 'bi-graph-up-arrow', [('disease-trends', 'Cases over time'), ('disease-totals', 'Cumulative cases')]),
+    ('nutrition_page', 'Nutrition data', 'bi-apple', [('nutrition-trends', 'Nutrient trends'), ('nutrition-states', 'State comparison'), ('nutrition-map', 'Nutrition map')])
+] %}
+<aside class="data-sidebar" aria-label="Dashboard navigation">
+    <a class="sidebar-home" href="{{ url_for('dashboard') }}"><i class="bi bi-grid-1x2" aria-hidden="true"></i><span>Main dashboard<small>Return to your workspace</small></span><i class="bi bi-arrow-up-left" aria-hidden="true"></i></a>
+    <div class="sidebar-section">
+        <h2>Explore dashboards</h2>
+        <nav aria-label="Data dashboards">
+            {% for endpoint, label, icon, charts in data_modules %}
+            <a class="sidebar-module{% if endpoint == active_data_page %} is-current{% endif %}" href="{{ url_for(endpoint) }}"{% if endpoint == active_data_page %} aria-current="page"{% endif %}><i class="bi {{ icon }}" aria-hidden="true"></i><span>{{ label }}</span><i class="bi bi-chevron-right" aria-hidden="true"></i></a>
+            {% endfor %}
+        </nav>
+    </div>
+    <div class="sidebar-section sidebar-charts">
+        <h2>{{ 'Available charts' if sidebar_loading|default(false) else 'On this page' }}</h2>
+        <nav aria-label="Chart shortcuts">
+            {% for endpoint, label, icon, charts in data_modules if endpoint == active_data_page %}
+            {% for anchor, title in charts %}
+            <a href="{{ url_for(endpoint) if sidebar_loading|default(false) else '' }}#{{ anchor }}"><span class="chart-number" aria-hidden="true">{{ '%02d'|format(loop.index) }}</span>{{ title }}</a>
+            {% endfor %}
+            {% endfor %}
+        </nav>
+    </div>
+</aside>

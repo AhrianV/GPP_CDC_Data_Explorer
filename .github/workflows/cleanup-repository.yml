@@ -1,0 +1,37 @@
+name: Cleanup Repository
+
+on:
+  pull_request_target:
+    branches:
+      - main
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: cleanup-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  cleanup:
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out pull request branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+
+      - name: Remove generated files
+        shell: bash
+        run: |
+          find . -type d -name "__pycache__" -prune -exec rm -rf '{}' +
+          find . -type f -name "*.pyc" -delete
+          find . -type f -name "app.db" -delete
+
+      - name: Commit cleanup to pull request branch
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "Automatically remove generated files"

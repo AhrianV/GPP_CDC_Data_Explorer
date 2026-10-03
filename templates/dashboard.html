@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+{% block title %}Dashboard | CDC Data Explorer{% endblock %}
+{% block extra_head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+{% endblock %}
+{% block content %}
+<div class="dashboard-shell">
+    <div class="dashboard-intro">
+        <span class="dashboard-eyebrow">CDC data explorer</span>
+        <h1>Welcome back, {{ user.username }}</h1>
+        <p>Explore public health data or bring your own dataset for a closer look.</p>
+    </div>
+    <div class="dashboard-overview">
+        <div class="page-title">
+            <div>
+                <span class="dashboard-eyebrow">Workspace overview</span>
+                <h2>Dashboard</h2>
+                <p>Your datasets, visualizations, and AI insights in one place.</p>
+            </div>
+            <a class="primary-btn" href="#upload-dataset"><i class="bi bi-plus-lg" aria-hidden="true"></i> Import dataset</a>
+        </div>
+        <nav class="dashboard-links" aria-label="Additional dashboards">
+            <a href="{{ url_for('vaccination_page') }}"><i class="bi bi-shield-check" aria-hidden="true"></i> COVID-19 vaccinations <i class="bi bi-arrow-up-right" aria-hidden="true"></i></a>
+            <a href="{{ url_for('disease_page') }}"><i class="bi bi-graph-up-arrow" aria-hidden="true"></i> Reported disease cases <i class="bi bi-arrow-up-right" aria-hidden="true"></i></a>
+            <a href="{{ url_for('nutrition_page') }}"><i class="bi bi-apple" aria-hidden="true"></i> Nutrition data <i class="bi bi-arrow-up-right" aria-hidden="true"></i></a>
+        </nav>
+        <section id="saved-charts" class="dashboard-panel" aria-labelledby="saved-charts-title">
+            <div class="panel-heading"><h2 id="saved-charts-title">Saved charts</h2><span class="help-text">{{ saved_charts|length }} saved</span></div>
+            {% if saved_charts %}
+            <div class="saved-chart-grid">
+                {% for chart in saved_charts %}
+                <article class="saved-chart-card">
+                    <a href="{{ chart.url }}"><i class="bi {{ chart.icon }}" aria-hidden="true"></i><span><small>{{ chart.module }}</small><strong>{{ chart.title }}</strong><span class="saved-chart-open">Open chart <i class="bi bi-arrow-up-right" aria-hidden="true"></i></span></span></a>
+                    <form action="{{ url_for('chart_favorite', chart_id=chart.id) }}" method="POST">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <input type="hidden" name="action" value="remove">
+                        <input type="hidden" name="return_to" value="dashboard">
+                        <button class="saved-chart-remove" type="submit" aria-label="Remove saved chart: {{ chart.title }}"><i class="bi bi-heart-fill" aria-hidden="true"></i> Remove</button>
+                    </form>
+                </article>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p class="saved-charts-empty"><i class="bi bi-heart" aria-hidden="true"></i> Save a chart using its heart button on a data page. Your shortcuts will appear here.</p>
+            {% endif %}
+        </section>
+        <section class="summary-grid" aria-label="Workspace metrics">
+            <div class="summary-card"><h3>Uploaded datasets</h3><strong>{{ datasets|length }}</strong><span>Saved in your workspace</span></div>
+            <div class="summary-card"><h3>Rows</h3><strong>{{ '{:,}'.format(profile.rows) if profile else '0' }}</strong><span>In the selected dataset</span></div>
+            <div class="summary-card"><h3>Columns</h3><strong>{{ profile.columns|length if profile else '0' }}</strong><span>In the selected dataset</span></div>
+            <div class="summary-card"><h3>AI analyses</h3><strong>{{ analyses_count }}</strong><span>Datasets with saved findings</span></div>
+        </section>
+        <section id="upload-dataset" class="dashboard-panel upload-panel" aria-labelledby="upload-title">
+            <div>
+                <span class="dashboard-eyebrow">Bring your own data</span>
+                <h2 id="upload-title">Upload &amp; analyze</h2>
+                <p>Import a dataset to generate charts and an analysis with Groq.</p>
+                <p class="help-text" id="upload-help">CSV, TSV, or JSON (an array of flat records). UTF-8, up to 5 MB, 50,000 rows, and 40 columns.</p>
+            </div>
+            <form action="{{ url_for('dashboard_upload') }}" method="POST" enctype="multipart/form-data" class="workspace-action upload-form">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <label for="dataset-file">Choose a dataset</label>
+                <input class="form-control" type="file" id="dataset-file" name="dataset" accept=".csv,.tsv,.json" required aria-describedby="upload-help upload-sharing">
+                <p class="help-text" id="upload-sharing">Column names, category labels, and aggregate statistics are sent to Groq. Your summary and a 10-row preview are saved to your account.</p>
+                <button class="primary-btn" type="submit" data-loading="Uploading and analyzing...">Upload &amp; analyze</button>
+                <span class="action-status help-text" role="status" aria-live="polite"></span>
+            </form>
+        </section>
+        {% if selected %}
+        <section class="dataset-selection" aria-labelledby="selected-title">
+            <div><span class="dashboard-eyebrow">Selected dataset</span><h2 id="selected-title">{{ selected.name }}</h2><p class="help-text">Uploaded {{ selected.created_at[:10] }} &middot; {{ '{:,}'.format(profile.missing_total) }} missing cells</p></div>
+            <form method="GET" action="{{ url_for('dashboard') }}" class="dataset-picker">
+                <label for="dataset-select">Switch dataset</label>
+                <div class="picker-controls"><select id="dataset-select" name="dataset" class="form-select">{% for dataset in datasets %}<option value="{{ dataset.id }}" {% if dataset.id == selected.id %}selected{% endif %}>{{ dataset.name }}</option>{% endfor %}</select><button class="btn btn-outline-secondary" type="submit">View</button></div>
+            </form>
+        </section>
+        <section class="chart-grid" aria-label="Dataset charts">
+            {% for chart in charts %}
+            <div class="chart-card">
+                <h2>{{ chart.title }}</h2>
+                {% if chart.data %}
+                <form class="chart-controls" method="GET" action="{{ url_for('dashboard') }}">
+                    <input type="hidden" name="dataset" value="{{ selected.id }}">
+                    {% for other in charts if other.kind != chart.kind and other.field %}<input type="hidden" name="{{ other.kind }}" value="{{ other.field }}">{% endfor %}
+                    <label class="visually-hidden" for="{{ chart.kind }}-field">Column for {{ chart.title }}</label>
+                    <select class="form-select" id="{{ chart.kind }}-field" name="{{ chart.kind }}">{% for field in chart.options %}<option {% if field == chart.field %}selected{% endif %}>{{ field }}</option>{% endfor %}</select>
+                    <button class="btn btn-outline-secondary" type="submit">Update</button>
+                </form>
+                <p class="help-text">{{ 'Row count per value range. All nonmissing rows included.' if chart.kind == 'numeric' else 'Row count for the 10 most frequent values. Missing cells excluded.' }}</p>
+                {% set maximum = chart.data.counts|max if chart.data.counts else 1 %}
+                <ol class="bar-chart" aria-label="{{ chart.title }} for {{ chart.field }}">
+                    {% for label in chart.data.labels %}
+                    {% set count = chart.data.counts[loop.index0] %}
+                    <li><span class="bar-label" title="{{ label }}">{{ label }}</span><span class="bar-track" aria-hidden="true"><span style="width: {{ count / maximum * 100 if maximum else 0 }}%"></span></span><span class="bar-value">{{ '{:,}'.format(count) }}</span></li>
+                    {% endfor %}
+                </ol>
+                {% if chart.kind == 'numeric' %}{% set stats = profile.numeric[chart.field] %}<p class="chart-footnote">Min {{ '{:,.4g}'.format(stats.min) }} &middot; Median {{ '{:,.4g}'.format(stats.median) }} &middot; Max {{ '{:,.4g}'.format(stats.max) }}</p>{% endif %}
+                {% else %}
+                <div class="chart-empty"><i class="bi bi-bar-chart" aria-hidden="true"></i><p>{{ 'No numeric columns in this dataset.' if chart.kind == 'numeric' else 'No category columns in this dataset.' }}</p></div>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </section>
+        <section class="dashboard-panel ai-panel" aria-labelledby="ai-title">
+            <div class="panel-heading"><div><span class="dashboard-eyebrow">Powered by Groq</span><h2 id="ai-title">Dataset insights</h2></div><span class="analysis-badge">AI generated</span></div>
+            {% if selected.analysis_error %}<p class="alert alert-warning" role="status">{{ selected.analysis_error }}</p>{% endif %}
+            {% if selected.analysis %}<div class="ai-analysis">{{ selected.analysis }}</div><p class="help-text">Analyzed {{ selected.analyzed_at[:10] }} using full-dataset summaries. Charts and counts are calculated directly from the uploaded data.</p>
+            {% elif not selected.analysis_error %}<p>No AI analysis has been saved yet.</p>{% endif %}
+            <form action="{{ url_for('dashboard_analyze', dataset_id=selected.id) }}" method="POST" class="workspace-action">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button class="btn btn-outline-secondary" type="submit" data-loading="Analyzing...">{{ 'Retry analysis' if selected.analysis_error else 'Analyze again' }}</button>
+                <span class="action-status help-text" role="status" aria-live="polite"></span>
+            </form>
+        </section>
+        <section class="dashboard-panel" aria-labelledby="preview-title">
+            <div class="panel-heading"><h2 id="preview-title">Data preview</h2><span class="help-text">First {{ profile.preview|length }} rows &middot; Long values shortened</span></div>
+            <div class="analysis-table-scroll" role="region" aria-label="Uploaded data preview" tabindex="0">
+                <table><thead><tr>{% for column in profile.columns %}<th scope="col">{{ column }}</th>{% endfor %}</tr></thead><tbody>{% for row in profile.preview %}<tr>{% for value in row %}<td>{{ value if value is not none else '—' }}</td>{% endfor %}</tr>{% endfor %}</tbody></table>
+            </div>
+        </section>
+        {% else %}
+        <section class="dashboard-panel empty-workspace"><i class="bi bi-bar-chart-line" aria-hidden="true"></i><h2>Your next insight starts here</h2><p>Upload your first dataset to see real metrics, charts, and AI findings.</p></section>
+        {% endif %}
+        {% if datasets %}
+        <section class="dashboard-panel" aria-labelledby="analyses-title">
+            <div class="panel-heading"><h2 id="analyses-title">Your datasets</h2><span class="help-text">{{ datasets|length }} uploaded</span></div>
+            <div class="analysis-table-scroll" role="region" aria-label="Saved datasets and analyses" tabindex="0">
+                <table><thead><tr><th scope="col">Dataset</th><th scope="col">Uploaded</th><th scope="col">AI analysis</th></tr></thead><tbody>
+                    {% for dataset in datasets %}<tr><td><a href="{{ url_for('dashboard', dataset=dataset.id) }}">{{ dataset.name }}</a></td><td>{{ dataset.created_at[:10] }}</td><td><span class="status {{ 'complete' if dataset.analyzed_at and not dataset.analysis_error else 'pending' }}">{{ 'Retry available' if dataset.analysis_error else 'Complete' if dataset.analyzed_at else 'Not analyzed' }}</span></td></tr>{% endfor %}
+                </tbody></table>
+            </div>
+        </section>
+        {% endif %}
+    </div>
+</div>
+<script src="{{ url_for('static', filename='js/dashboard.js') }}" defer></script>
+{% endblock %}

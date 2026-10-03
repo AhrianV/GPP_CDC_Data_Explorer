@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+{% from "chart_favorite.html" import favorite_button with context %}
+{% block title %}Nutrition Data | CDC Data Explorer{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/data-pages.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="container data-page nutrition-page">
+    <div class="data-page-layout">
+        <div class="data-page-main">
+
+            <div class="data-page-heading nutrition-heading">
+                <span>Dietary Trends</span>
+                <h1>National Nutrition Data</h1>
+                <p>Track nutritional intake habits over time and compare dietary health metrics across states.</p>
+            </div>
+
+            <div class="nutrition-summary-bar" aria-label="Nutrition dataset summary">
+                <span class="summary-pill"><i class="bi bi-graph-up-arrow"></i> USDA / Open Food Facts</span>
+                <span class="summary-pill"><i class="bi bi-activity"></i> Live nutrient metrics</span>
+                <span class="summary-pill"><i class="bi bi-heart-pulse"></i> Health-focused insights</span>
+            </div>
+
+            <p class="text-muted small">Values describe food products per 100 g. Dates reflect product publication dates; state labels are demonstration assignments, not measured state nutrition data.</p>
+
+            <!-- Panel 1: Trends Over Time -->
+            <div id="nutrition-trends" class="data-panel nutrition-panel my-5 p-4">
+                {{ favorite_button("nutrition-trends", "Nutrient trends") }}
+                <div class="panel-header">
+                    <div class="panel-badge">
+                        <i class="bi bi-activity" aria-hidden="true"></i>
+                    </div>
+                    <span class="panel-label">Nutrient trend</span>
+                </div>
+                {{ nutrition_over_time_graph | safe }}
+
+                {% if nutrition_over_time_analysis %}
+                    <div class="analysis-panel rounded mt-5 p-3" role="status">
+                        <span class="badge" style="background-color: #76B5FF">AI Generated</span>
+                        <div class="text-center" style="white-space: pre-wrap;">{{ nutrition_over_time_analysis }}</div>
+                    </div>
+                {% else %}
+                    <form action="{{ url_for('nutrition_page') }}" method="POST" class="nutrition-ai-form">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <input name="graph-title" type="hidden" value="Nutritional Intake Trends Over Time">
+                        <input name="data" type="hidden" value="nutrition_over_time">
+                        <button class="btn btn-primary" type="submit">AI Analyze</button>
+                    </form>
+                {% endif %}
+            </div>
+
+            <!-- Panel 2: Comparison by State Bar Graph -->
+            <div id="nutrition-states" class="data-panel nutrition-panel p-4">
+                {{ favorite_button("nutrition-states", "Nutrient comparison by state") }}
+                <div class="panel-header">
+                    <div class="panel-badge">
+                        <i class="bi bi-bar-chart"></i>
+                    </div>
+                    <span class="panel-label">State comparison</span>
+                </div>
+                {{ nutrition_by_state_graph | safe }}
+
+                {% if nutrition_state_bar_analysis %}
+                    <div class="analysis-panel rounded mt-5 p-3" role="status">
+                        <span class="badge" style="background-color: #76B5FF">AI Generated</span>
+                        <div class="text-center" style="white-space: pre-wrap;">{{ nutrition_state_bar_analysis }}</div>
+                    </div>
+                {% else %}
+                    <form action="{{ url_for('nutrition_page') }}" method="POST" class="nutrition-ai-form">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <input name="graph-title" type="hidden" value="Nutritional Metrics by State Bar Graph">
+                        <input name="data" type="hidden" value="nutrition_state_bar">
+                        <button class="btn btn-primary" type="submit">AI Analyze</button>
+                    </form>
+                {% endif %}
+            </div>
+
+            <!-- Panel 3: Geographical Map -->
+            <div id="nutrition-map" class="data-panel nutrition-panel my-5 p-4">
+                {{ favorite_button("nutrition-map", "Nutrition map") }}
+                <div class="panel-header">
+                    <div class="panel-badge">
+                        <i class="bi bi-globe-americas"></i>
+                    </div>
+                    <span class="panel-label">Geographic view</span>
+                </div>
+                {{ nutrition_by_state_map | safe }}
+
+                {% if nutrition_state_map_analysis %}
+                    <div class="analysis-panel rounded mt-5 p-3" role="status">
+                        <span class="badge" style="background-color: #76B5FF">AI Generated</span>
+                        <div class="text-center" style="white-space: pre-wrap;">{{ nutrition_state_map_analysis }}</div>
+                    </div>
+                {% else %}
+                    <form action="{{ url_for('nutrition_page') }}" method="POST" class="nutrition-ai-form">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <input name="graph-title" type="hidden" value="Dietary Deficiencies Across States Choropleth (analysis should be more geographically focused)">
+                        <input name="data" type="hidden" value="nutrition_state_map">
+                        <button class="btn btn-primary" type="submit">AI Analyze</button>
+                    </form>
+                {% endif %}
+
+            </div>
+
+        </div>
+        {% with active_data_page="nutrition_page", sidebar_loading=false %}
+            {% include "data_sidebar.html" %}
+        {% endwith %}
+    </div>
+</div>
+<script>
+    document.querySelectorAll('.nutrition-ai-form').forEach(form => {
+        form.addEventListener('submit', () => {
+            document.querySelectorAll('.nutrition-ai-form button').forEach(button => {
+                button.disabled = true;
+            });
+            form.querySelector('button').textContent = 'Analyzing...';
+            form.setAttribute('aria-busy', 'true');
+        });
+    });
+    window.addEventListener('pageshow', () => {
+        document.querySelectorAll('.nutrition-ai-form').forEach(form => {
+            form.removeAttribute('aria-busy');
+            const button = form.querySelector('button');
+            button.disabled = false;
+            button.textContent = 'AI Analyze';
+        });
+    });
+</script>
+<script src="{{ url_for('static', filename='js/favorites.js') }}" defer></script>
+{% endblock %}

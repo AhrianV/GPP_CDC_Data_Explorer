@@ -1,0 +1,86 @@
+<!-- Extend the base template -->
+{% extends "base.html" %}
+
+<!-- Override the content block -->
+{% block content %}
+<!-- Main container with top margin -->
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-10 offset-md-1">
+            <h1 class="display-4 text-center mb-4">Your Flask App</h1>
+            <p class="lead text-center">A simple, modular Flask application with Bootstrap, Jinja templating, and organized frontend assets.</p>
+            <hr class="my-4">
+
+            <h2>Welcome!</h2>
+            <p>This application includes a Flask backend for routing and rendering, Bootstrap for responsive UI, and a reusable Jinja layout structure.</p>
+
+            <h2>What’s included</h2>
+            <ul>
+                <li>A Flask backend that handles routing, server-side logic, and page rendering</li>
+                <li>Bootstrap integration for responsive layouts and modern UI components</li>
+                <li>Reusable Jinja templates with a shared <code>base.html</code> layout</li>
+                <li>Organized frontend structure using templates, custom CSS, and JavaScript</li>
+                <li>Environment configuration through <code>.env</code> files for secure settings</li>
+                <li>A modular structure that separates models, templates, static assets, and backend logic</li>
+            </ul>
+
+            <h2>Project Structure</h2>
+            <div class="row">
+                <div class="col-md-6">
+                    <h4>Backend (Python / Flask)</h4>
+                    <ul>
+                        <li><strong>run.py</strong> → Main application entry point</li>
+                        <li><strong>routes.py</strong> → Flask routes and page logic</li>
+                        <li><strong>.env</strong> → Environment variables and secret configuration</li>
+                        <li><strong>.env.example</strong> → Example environment variable template</li>
+                        <li><strong>requirements.txt</strong> → Python dependencies</li>
+                        <li><strong>app/models/</strong> → Database models and backend data structures
+                            <ul>
+                                <li><code>user.py</code> → Example user model</li>
+                                <li><code>__init__.py</code> → Initializes the models package</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    <h4>Frontend (HTML / CSS / JavaScript)</h4>
+                    <ul>
+                        <li><strong>templates/</strong> → HTML templates rendered by Flask
+                            <ul>
+                                <li><code>base.html</code> → Shared layout and structure</li>
+                                <li><code>index.html</code> → Main homepage</li>
+                                <li><code>signin.html</code> → Sign-in form</li>
+                                <li><code>template.html</code> → Reusable page template</li>
+                            </ul>
+                        </li>
+                        <li><strong>static/</strong> → Frontend assets
+                            <ul>
+                                <li><code>css/style.css</code> → Custom styling</li>
+                                <li><code>js/main.js</code> → Client-side JavaScript</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <h2>Other Project Files</h2>
+            <ul>
+                <li><strong>README.md</strong> → Project documentation and setup instructions</li>
+                <li><strong>.gitignore</strong> → Files and folders excluded from Git tracking</li>
+            </ul>
+            
+            <h2>Quick Start</h2>
+            <ol>
+                <li>Install packages: <code>pip install -r requirements.txt</code></li>
+                <li>Run the app: <code>python run.py</code></li>
+                <li>Open your browser to <code>http://127.0.0.1:5000</code></li>
+                <li>Start customizing routes, templates, and static assets</li>
+            </ol>
+
+            <div class="alert alert-success">
+                <strong>Tip:</strong> Check out the <a href="{{ url_for('signin') }}">Sign In page</a> to see how forms work.
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

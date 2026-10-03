@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% from "chart_favorite.html" import favorite_button with context %}
+{% block title %}{{ details.title }} | CDC Data Explorer{% endblock %}
+{% block extra_head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/data-pages.css') }}">
+{% endblock %}
+{% block content %}
+<div class="container data-page" id="public-data-page" data-page="{{ page }}"
+     data-live-url="{{ url_for('public_charts', page=page) }}"
+     data-topojson-url="{{ url_for('static', filename='vendor/') }}">
+    <div class="data-page-layout">
+        <div class="data-page-main">
+            <div class="data-page-heading">
+                <span>{{ details.eyebrow }}</span>
+                <h1>{{ details.title }}</h1>
+                <p>{{ details.description }}</p>
+            </div>
+            <p id="data-loading-status" role="status" aria-live="polite">Loading CDC data. This will take no more than 10 seconds before a saved-data option is offered.</p>
+            {% for chart_id, title, selector in details.charts %}
+            <section id="{{ chart_id }}" class="data-panel my-4 p-4">
+                {{ favorite_button(chart_id, title) }}
+                <h2 class="h5">{{ title }}</h2>
+                <div id="{{ chart_id }}-plot" data-chart-id="{{ chart_id }}" aria-label="{{ title }}"></div>
+                <form action="{{ url_for(details.endpoint) }}" method="POST" data-live-analysis hidden>
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <input type="hidden" name="data" value="{{ selector }}">
+                    <button class="btn btn-primary" type="submit">AI Analyze</button>
+                </form>
+            </section>
+            {% endfor %}
+            <div id="data-fallback-notice" class="alert alert-warning mb-4" role="status" aria-live="polite" hidden>
+                <p id="data-fallback-message">We weren't able to load recent CDC data. You can still view the saved demo data.</p>
+                <button id="load-saved-data" type="button" class="btn btn-primary">Load without recent data</button>
+                <button id="retry-recent-data" type="button" class="btn btn-outline-secondary">Try recent data again</button>
+            </div>
+            <noscript><p class="alert alert-info">Enable JavaScript to load the interactive charts and saved demo data.</p></noscript>
+        </div>
+        {% with active_data_page=details.endpoint, sidebar_loading=false %}
+            {% include "data_sidebar.html" %}
+        {% endwith %}
+    </div>
+</div>
+<script src="{{ url_for('static', filename='js/cdc-demo-data.js') }}" defer></script>
+<script src="{{ url_for('static', filename='js/public-data.js') }}" defer></script>
+<script src="{{ url_for('static', filename='vendor/plotly.min.js') }}" defer></script>
+<script src="{{ url_for('static', filename='js/favorites.js') }}" defer></script>
+{% endblock %}

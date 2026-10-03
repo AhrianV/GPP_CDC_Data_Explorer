@@ -1,0 +1,56 @@
+/* Custom styles - add your CSS here */
+
+:root {
+    --color-navy: #002952;
+    --color-midnight: #336B91;
+    --color-gold: #C38C1F;
+}
+
+body {
+    background-color: #F3F8FD;
+}
+
+.navbar {
+    background-color: var(--color-navy);
+    border-bottom: 3px solid var(--color-gold);
+}
+
+.navbar .nav-link:hover,
+.navbar .nav-link:focus {
+    color: var(--color-gold) !important;
+}
+
+.card {
+    border: none;
+    box-shadow: 0 2px 10px rgba(0, 41, 82, 0.15);
+}
+
+.card-header {
+    background-color: var(--color-navy);
+    color: #ffffff;
+}
+
+.btn-primary {
+    background-color: var(--color-midnight);
+    border-color: var(--color-midnight);
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+    background-color: var(--color-navy);
+    border-color: var(--color-navy);
+}
+
+a {
+    color: var(--color-midnight);
+}
+
+a:hover {
+    color: var(--color-navy);
+}
+
+footer {
+    background-color: var(--color-navy);
+    border-top: 3px solid var(--color-gold) !important;
+    color: #ffffff;
+}
